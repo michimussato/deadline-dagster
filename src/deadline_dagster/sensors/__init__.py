@@ -6,7 +6,7 @@ from dagster import (
     sensor,
     SensorEvaluationContext,
     AssetSelection,
-    AutoMaterializeSensorDefinition,
+    AutomationConditionSensorDefinition,
 )
 
 import os
