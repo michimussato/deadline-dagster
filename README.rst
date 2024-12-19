@@ -30,7 +30,7 @@
 |
 
 ===================
-My-Skeleton-Package
+deadline-dagster
 ===================
 
 

@@ -14,9 +14,9 @@ import json
 import pathlib
 import shutil
 
-from .. import settings
+from deadline_dagster import settings
 
-from ..jobs import submit_synced_jobs, ingest_synced_jobs
+from deadline_dagster.jobs import submit_synced_jobs, ingest_synced_jobs
 
 
 @sensor(
