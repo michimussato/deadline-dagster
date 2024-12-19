@@ -154,7 +154,7 @@ def ingestion_sensor(
 
 # Custom AutoMaterialize Sensor
 # https://docs.dagster.io/concepts/assets/asset-auto-execution#auto-materialize-sensors
-my_custom_auto_materialize_sensor = AutoMaterializeSensorDefinition(
+my_custom_auto_materialize_sensor = AutomationConditionSensorDefinition(
     "my_custom_auto_materialize_sensor",
     asset_selection=AssetSelection.all(include_sources=True),
     minimum_interval_seconds=15,
