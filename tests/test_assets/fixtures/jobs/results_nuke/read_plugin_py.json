@@ -1,0 +1,25 @@
+{
+  "submitter": {
+    "args": [
+      "--nukex",
+      "-t",
+      "-f",
+      "-X",
+      "{write_nodes}",
+      "-F",
+      "<STARTFRAME>-<ENDFRAME>",
+      "-x",
+      "<QUOTE>{job_file}<QUOTE>",
+      "<QUOTE>\\\"{render_output}\\\"<QUOTE>"
+    ],
+    "chunk_size": 10,
+    "executable": "/nfs/rez-packages/wrappers/nuke-15.0v4",
+    "output_formats": [
+      "png",
+      "exr",
+      "jpg"
+    ],
+    "type": "NukeSubmitter",
+    "write_nodes": null
+  }
+}

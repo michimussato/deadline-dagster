@@ -1,0 +1,20 @@
+---
+submitter:
+  type: 'HoudiniSubmitter'
+  executable: '/nfs/rez-packages/wrappers/hython-19.5.805'
+  output_formats:
+    - 'png'
+    - 'exr'
+    - 'jpg'
+  rop: ''
+  can_render_negative_frames: true
+  args:
+    - '/nfs/deadline/DeadlineRepository10/plugins/Houdini/hrender_dl.py'
+    - '-e'
+    - '-f'
+    - '<STARTFRAME> <ENDFRAME> {chunk_size}'
+    - '-d'
+    - '{rop}'
+    - '-o'
+    - '<QUOTE>{render_output}<QUOTE>'
+    - '<QUOTE>{job_file}<QUOTE>'

@@ -1,0 +1,20 @@
+---
+deadline_initial_status: 'Active'
+deadline_job_with_draft: true
+handles: 4
+comment: ''
+submitter:
+  type: 'BlenderSubmitter'
+  executable: '/nfs/rez-packages/wrappers/blender-4.1.0'
+  job_file: '/nfs/AWSPortalRoot1/fixtures/blender/sh030_001.blend'
+  render_engine: 'CYCLES'
+  # kitsu_task: '385f93d4-49da-4d3f-bdf1-4dc095a9c10a'  # Modeling
+  # kitsu_task: '85f47d1a-e7aa-4f18-a660-cdd3adf9e4e3'  # Shading
+  # kitsu_task: '84c00881-4939-44ff-b570-644eb6183e47'  # SQ020_SH010 Layout
+  # kitsu_task: '129a9582-a543-49ad-8dce-10f073877d21'  # SQ020_SH020 Layout
+  # kitsu_task: '572778f5-2883-4914-9116-6f148d65750e'  # SQ020_SH020 Animation
+  kitsu_task: 'ca153978-9ed2-4d3b-8f54-22584099490a'  # SQ020_SH030 Layout
+  # kitsu_task: 'ef8882af-c803-4907-bd8c-bfde87d0dbef'  # SQ020_SH030 Animation
+  append_draft_job_png: true
+  append_draft_job_mov: true
+  with_kitsu_publish: true

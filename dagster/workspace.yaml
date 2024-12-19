@@ -1,0 +1,9 @@
+load_from:
+#  - python_package:
+#      package_name: My-Skeleton-Package
+#      location_name: "My Skeleton Package Location"
+  - python_module:
+      working_directory: src
+      module_name: PackageNamespace.my_skeleton_package.definitions
+      location_name: "My Skeleton Package Location"
+      # executable_path: ../.venv/bin/python

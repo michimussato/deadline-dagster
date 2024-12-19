@@ -1,0 +1,29 @@
+{
+  "append_draft_job_mov": true,
+  "append_draft_job_png": true,
+  "chunk_size": 10,
+  "comment": "This is Nuke job comment",
+  "deadline_initial_status": "Active",
+  "deadline_job_with_draft": true,
+  "frame_end": 1100,
+  "frame_start": 1051,
+  "handles": 4,
+  "initial_statuses": [
+    "Active",
+    "Suspended"
+  ],
+  "job_file": "/nfs/AWSPortalRoot1/fixtures/nuke/fixture_v001.nk",
+  "kitsu_task": "9bb09bfa-0a97-40c6-a6e6-27405b198570",
+  "output_format": "exr",
+  "output_formats": [
+    "png",
+    "exr",
+    "jpg",
+    "tga"
+  ],
+  "resolution_draft_scale": 0.5,
+  "with_kitsu_publish": true,
+  "write_nodes": [
+    "write_farm"
+  ]
+}

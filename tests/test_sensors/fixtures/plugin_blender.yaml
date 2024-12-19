@@ -1,0 +1,30 @@
+---
+submitter:
+  type: 'BlenderSubmitter'
+  executable: '/nfs/rez-packages/wrappers/blender-4.1.0'
+  output_formats:
+    - 'png'
+    - 'exr'
+    - 'jpg'
+    - 'tga'
+  render_engine: 'CYCLES'
+  render_engines:
+    - 'CYCLES'
+    - 'BLENDER_EEVEE'
+    - 'WORKBENCH'
+  args:
+    - '--background'
+    - '<QUOTE>"{job_file}"<QUOTE>'
+    - '--render-output'
+    - '<QUOTE>"{render_output}"<QUOTE>'
+    - '--render-format'
+    - '{output_format}'
+    - '--engine'
+    - '{engine}'
+    - '--frame-start'
+    - '<STARTFRAME>'
+    - '--frame-end'
+    - '<ENDFRAME>'
+    - '--threads'
+    - '0'
+    - '--render-anim'

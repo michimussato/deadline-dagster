@@ -1,0 +1,49 @@
+---
+job_file: '/nfs/AWSPortalRoot1/fixtures/blender/sh030_001.blend'
+handles: 4
+output_format: 'jpg'
+chunk_size: 10
+deadline_initial_status: 'Active'
+initial_statuses: ['Active', 'Suspended']
+kitsu_task_id: null
+append_draft_job_png: true
+append_draft_job_mov: true
+with_kitsu_publish: true
+deadline_job_with_draft: true
+comment: ''
+frame_start: 1201
+frame_end: 1250
+resolution_draft_scale: 0.5
+kitsu_task: 'ca153978-9ed2-4d3b-8f54-22584099490a'  # SQ020_SH030 Layout
+
+# kitsu_task: '385f93d4-49da-4d3f-bdf1-4dc095a9c10a'  # Modeling
+# kitsu_task: '85f47d1a-e7aa-4f18-a660-cdd3adf9e4e3'  # Shading
+# kitsu_task: '84c00881-4939-44ff-b570-644eb6183e47'  # SQ020_SH010 Layout
+# kitsu_task: '129a9582-a543-49ad-8dce-10f073877d21'  # SQ020_SH020 Layout
+# kitsu_task: '572778f5-2883-4914-9116-6f148d65750e'  # SQ020_SH020 Animation
+# kitsu_task: 'ef8882af-c803-4907-bd8c-bfde87d0dbef'  # SQ020_SH030 Animation
+
+# # CONSTANTS
+# OUTPUT_ROOT = '/nfs/AWSPortalRoot1/out'
+# PADDING = 4
+# CHUNK_SIZE = 1
+# FRAME_JUMPS = [10, 5, 2, 1]
+# OUTPUT_FORMAT = 'exr'
+# RESOLUTION_DRAFT_SCALE = 0.5
+# DEFAULT_HANDLES = 4
+# DEFAULT_FRAME_START = 1001
+# DONT_ALLOW_NEGATIVE_FRAMES = False
+# DEFAULT_RESOLUTION = (1920, 1080)
+# DEFAULT_FPS = 24.0
+#
+# GAZU_PY = '/opt/gazu/gazuenv/bin/python3.9'
+#
+# DEADLINE_ERRORS = [
+#     # Connecting to the correct repository?
+#     "'\nConfiguration Error: Failed to establish connection to michimussato-fuji.nord:4433 due to a communication error.\n'"
+#     # Changed repo but need to go and enter the passphrase again manually
+#     "'Error: Error encountered when loading the configured Client Certificate (/nfs/deadline/Deadline10/certs/certs/Deadline10RemoteClient.pfx). It is likely either an invalid x.509 certificate, or the wrong passphrase was provided.\n\nFull Error:\nThe certificate data cannot be read with the provided password, the password may be incorrect.\n'",
+# ]
+# DEADLINE_SUCCESSES = [
+#     "'result: System.Collections.Generic.List`1[System.String]\n'",
+# ]
