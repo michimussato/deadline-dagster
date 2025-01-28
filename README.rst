@@ -29,16 +29,35 @@
 
 |
 
-===================
+================
 deadline-dagster
-===================
+================
 
 
     Add a short description here!
 
 
-A longer description of your project goes here...
+Installation
+============
 
+Clone and Install
+-----------------
+
+
+    git clone https://github.com/michimussato/deadline-dagster.git
+    cd deadline-dagster
+    python3.11 -m venv .venv
+    source .venv/bin/activate
+    pip install -e .[dev]
+
+
+
+Install into venv
+-----------------
+
+
+    source .venv/bin/activate
+    python -m pip install "deadline-dagster[dev] @ git+https://github.com/michimussato/deadline-dagster.git@main"
 
 .. _pyscaffold-notes:
 

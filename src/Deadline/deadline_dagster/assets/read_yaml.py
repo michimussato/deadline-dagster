@@ -12,7 +12,7 @@ from dagster import (
 )
 import json
 
-from deadline_dagster.resources import KitsuResource
+from Deadline.deadline_dagster.resources import KitsuResource
 
 
 # TODO
