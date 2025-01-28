@@ -4,7 +4,8 @@ import importlib.util
 import sys
 
 
-parent = pathlib.Path(os.getenv("DAGSTER_JOB_BASE_DIR")) / 'job_template.py'
+# parent = pathlib.Path(os.getenv("DAGSTER_JOB_BASE_DIR")) / 'job_template.py'
+parent = pathlib.Path("/opt/dagster/repos/deadline-dagster/tests/test_assets/fixtures/jobs/job_template.py")
 
 
 spec = importlib.util.spec_from_file_location(str(parent.parent).replace(os.sep, '.'), parent)
