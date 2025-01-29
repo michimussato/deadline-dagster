@@ -12,8 +12,8 @@ SENSORS_STATUS = DefaultSensorStatus.RUNNING
 JSON_INDENT = 2
 SUBMISSION_JSON = "submission.json"
 OUTPUT_ROOT = "/nfs/AWSPortalRoot1/out"
-INPUT_ROOT = pathlib.Path(os.getenv("DAGSTER_JOBS_IN", "/nfs/in"))
-INPUT_ROOT_PROCESSED = pathlib.Path(os.getenv("DAGSTER_JOBS_IN", "/nfs/in/")) / ".processing"
+INPUT_ROOT =  # pathlib.Path(os.getenv("DAGSTER_JOBS_IN", "/nfs/in"))
+INPUT_ROOT_PROCESSED =  # pathlib.Path(os.getenv("DAGSTER_JOBS_IN", "/nfs/in/")) / ".processing"
 
 DEADLINE_ERRORS = [
     # Connecting to the correct repository?

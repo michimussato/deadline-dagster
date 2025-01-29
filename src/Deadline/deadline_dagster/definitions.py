@@ -34,7 +34,7 @@ resources = {
 }
 
 
-deployment_name = os.getenv("DAGSTER_DEPLOYMENT", "farm")
+deployment_name =  # os.getenv("DAGSTER_DEPLOYMENT", "farm")
 
 
 defs = Definitions(
