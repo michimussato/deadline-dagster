@@ -57,86 +57,86 @@ def read_job_py(
     )
 
 
+# @asset(
+#     ins={
+#         "read_job_py": AssetIn(),
+#     },
+#     group_name=group_name,
+#     description="Parses the plugin file.",
+# )
+# def read_plugin_py(
+#         read_job_py: dict,
+# ) -> dict:
+#
+#     # plugin_dict = read_job_py['plugin_dict']
+#
+#     # if parent is None:
+#     #     raise Exception(f'Plugin file not set: {read_job_py["plugin_file"] = }')
+#     #
+#     # spec = importlib.util.spec_from_file_location(str(pathlib.Path(parent).parent).replace(os.sep, '.'), parent)
+#     # module_from_spec = importlib.util.module_from_spec(spec)
+#     # sys.modules[str(pathlib.Path(parent).parent).replace(os.sep, '.')] = module_from_spec
+#     # spec.loader.exec_module(module_from_spec)
+#     # plugin = module_from_spec.plugin
+#
+#     if read_job_py['plugin_dict']['submitter']['executable'] is None:
+#         raise Exception(f'Plugin executable not set: {plugin = }')
+#
+#     yield Output(plugin)
+#
+#     yield AssetMaterialization(
+#         asset_key="read_plugin_py",
+#         metadata={
+#             'json': MetadataValue.json(plugin)
+#         }
+#     )
+
+
+# @asset(
+#     group_name=group_name,
+#     ins={
+#         "read_job_py": AssetIn(),
+#         # "read_plugin_py": AssetIn(),
+#     },
+# )
+# def merge_dicts(
+#         read_job_py: dict,
+#         # read_plugin_py: dict,
+# ) -> dict:
+#     """Merges the `job.py` dict and the `plugin.py` dict
+#      into one single dict and returns its contents as a `MaterializeResult` object in the JSON format."""
+#
+#     # merge dicts
+#     yaml_dict = read_job_py | read_plugin_py
+#
+#     # https://discuss.dagster.io/t/18787421/u0667dnc02y-when-returning-a-materializeresult-from-an-asset#87efa45e-008f-4d1d-b628-01fd07220ff6
+#     # https://discuss.dagster.io/t/18787421/u0667dnc02y-when-returning-a-materializeresult-from-an-asset#891a726e-e379-4c14-a19c-64ec7945e344
+#
+#     yield Output(yaml_dict)
+#
+#     yield AssetMaterialization(
+#         asset_key="merge_dicts",
+#         metadata={
+#             'json': MetadataValue.json(yaml_dict)
+#         }
+#     )
+
+
 @asset(
-    ins={
-        "read_job_py": AssetIn(),
-    },
-    group_name=group_name,
-    description="Parses the plugin file.",
-)
-def read_plugin_py(
-        read_job_py: dict,
-) -> dict:
-
-    parent = read_job_py['plugin_file']
-
-    if parent is None:
-        raise Exception(f'Plugin file not set: {read_job_py["plugin_file"] = }')
-
-    spec = importlib.util.spec_from_file_location(str(pathlib.Path(parent).parent).replace(os.sep, '.'), parent)
-    module_from_spec = importlib.util.module_from_spec(spec)
-    sys.modules[str(pathlib.Path(parent).parent).replace(os.sep, '.')] = module_from_spec
-    spec.loader.exec_module(module_from_spec)
-    plugin = module_from_spec.plugin
-
-    if plugin['submitter']['executable'] is None:
-        raise Exception(f'Plugin executable not set: {plugin = }')
-
-    yield Output(plugin)
-
-    yield AssetMaterialization(
-        asset_key="read_plugin_py",
-        metadata={
-            'json': MetadataValue.json(plugin)
-        }
-    )
-
-
-@asset(
     group_name=group_name,
     ins={
-        "read_job_py": AssetIn(),
-        "read_plugin_py": AssetIn(),
-    },
-)
-def merge_dicts(
-        read_job_py: dict,
-        read_plugin_py: dict,
-) -> dict:
-    """Merges the `job.py` dict and the `plugin.py` dict
-     into one single dict and returns its contents as a `MaterializeResult` object in the JSON format."""
-
-    # merge dicts
-    yaml_dict = read_job_py | read_plugin_py
-
-    # https://discuss.dagster.io/t/18787421/u0667dnc02y-when-returning-a-materializeresult-from-an-asset#87efa45e-008f-4d1d-b628-01fd07220ff6
-    # https://discuss.dagster.io/t/18787421/u0667dnc02y-when-returning-a-materializeresult-from-an-asset#891a726e-e379-4c14-a19c-64ec7945e344
-
-    yield Output(yaml_dict)
-
-    yield AssetMaterialization(
-        asset_key="merge_dicts",
-        metadata={
-            'json': MetadataValue.json(yaml_dict)
-        }
-    )
-
-
-@asset(
-    group_name=group_name,
-    ins={
-        "merge_dicts": AssetIn()
+        "read_job_py": AssetIn()
     },
 )
 def get_kitsu_task_dict(
         kitsu_resource: KitsuResource,
-        merge_dicts: dict,
+        read_job_py: dict,
 ) -> dict:
     """Returns a Kitsu task dict as a MaterializeResult object in the JSON format."""
 
     # TODO: make fail safe
 
-    task_id = merge_dicts["kitsu_task"]
+    task_id = read_job_py["kitsu_task"]
     task_dict = kitsu_resource.get_kitsu_task_dict(task_id=task_id)
 
     yield Output(task_dict)
@@ -272,7 +272,7 @@ def annotations_string(
 @asset(
     group_name=group_name,
     ins={
-        "merge_dicts": AssetIn(),
+        "read_job_py": AssetIn(),
         "get_kitsu_task_dict": AssetIn(),
         "get_task_url": AssetIn(),
         "handles": AssetIn(),
@@ -289,7 +289,7 @@ def annotations_string(
     },
 )
 def combine_dicts(
-        merge_dicts: dict,
+        read_job_py: dict,
         get_kitsu_task_dict: dict,
         get_task_url: str,
         handles: int,
@@ -305,18 +305,18 @@ def combine_dicts(
         JOB_DICT_TEMPLATE: dict,
 ) -> dict:
 
-    merge_dicts.update({"handles": handles})
-    merge_dicts.update({"frame_start": frame_start_absolute})
-    merge_dicts.update({"frame_end": frame_end_absolute})
-    merge_dicts.update({"resolution": resolution})
-    merge_dicts.update({"show_name": show_name})
-    merge_dicts.update({"job_title": job_title})
-    merge_dicts.update({"render_version_directory": render_version_directory})
-    merge_dicts.update({"task_name": task_name})
-    merge_dicts.update({"fps": fps})
-    merge_dicts.update({"output_format": output_format})
+    read_job_py.update({"handles": handles})
+    read_job_py.update({"frame_start": frame_start_absolute})
+    read_job_py.update({"frame_end": frame_end_absolute})
+    read_job_py.update({"resolution": resolution})
+    read_job_py.update({"show_name": show_name})
+    read_job_py.update({"job_title": job_title})
+    read_job_py.update({"render_version_directory": render_version_directory})
+    read_job_py.update({"task_name": task_name})
+    read_job_py.update({"fps": fps})
+    read_job_py.update({"output_format": output_format})
 
-    get_kitsu_task_dict['yaml_submission'] = merge_dicts
+    get_kitsu_task_dict['yaml_submission'] = read_job_py
     get_kitsu_task_dict['job_dict_template'] = JOB_DICT_TEMPLATE
     get_kitsu_task_dict['task_url'] = get_task_url
     get_kitsu_task_dict['deadline_job_submitted'] = False
@@ -336,7 +336,7 @@ def combine_dicts(
 @asset(
     group_name=group_name,
     ins={
-        "merge_dicts": AssetIn(),
+        "read_job_py": AssetIn(),
         "get_kitsu_task_dict": AssetIn(),
         "show_name": AssetIn(),
         "task_name": AssetIn(),
@@ -344,7 +344,7 @@ def combine_dicts(
     },
 )
 def render_version_directory(
-        merge_dicts: dict,
+        read_job_py: dict,
         get_kitsu_task_dict: dict,
         show_name: str,
         task_name: str,
@@ -352,7 +352,7 @@ def render_version_directory(
 ) -> str:
 
     # TODO: make this fail safe
-    if bool({merge_dicts["kitsu_task"]}):
+    if bool({read_job_py["kitsu_task"]}):
         entity_name = get_kitsu_task_dict["entity"]["name"]
     else:
         entity_name = 'No Entity Name'
@@ -480,13 +480,13 @@ def render_output_directory(
 @asset(
     group_name=group_name,
     ins={
-        "merge_dicts": AssetIn(),
+        "read_job_py": AssetIn(),
     }
 )
 def job_title(
-        merge_dicts: dict,
+        read_job_py: dict,
 ) -> str:
-    base, first_dot, rest = pathlib.Path(merge_dicts["job_file"]).name.partition('.')
+    base, first_dot, rest = pathlib.Path(read_job_py["job_file"]).name.partition('.')
 
     yield Output(base)
 
@@ -501,15 +501,15 @@ def job_title(
 @asset(
     group_name=group_name,
     ins={
-        "merge_dicts": AssetIn(),
+        "read_job_py": AssetIn(),
         "get_kitsu_task_dict": AssetIn(),
     }
 )
 def show_name(
-        merge_dicts: dict,
+        read_job_py: dict,
         get_kitsu_task_dict: dict,
 ) -> str:
-    if bool(merge_dicts["kitsu_task"]):
+    if bool(read_job_py["kitsu_task"]):
         ret = get_kitsu_task_dict['project']['name']
     else:
         ret = 'No Show'
@@ -527,15 +527,15 @@ def show_name(
 @asset(
     group_name=group_name,
     ins={
-        "merge_dicts": AssetIn(),
+        "read_job_py": AssetIn(),
         "get_kitsu_task_dict": AssetIn(),
     }
 )
 def task_name(
-        merge_dicts: dict,
+        read_job_py: dict,
         get_kitsu_task_dict: dict,
 ) -> str:
-    if bool(merge_dicts["kitsu_task"]):
+    if bool(read_job_py["kitsu_task"]):
         ret = get_kitsu_task_dict['task_type']['name']
     else:
         ret = 'No Task Name'
@@ -649,18 +649,18 @@ def props(
 @asset(
     group_name=group_name,
     ins={
-        "merge_dicts": AssetIn(),
+        "read_job_py": AssetIn(),
         "DEFAULT_HANDLES": AssetIn(),
     }
 )
 def handles(
-        merge_dicts: dict,
+        read_job_py: dict,
         DEFAULT_HANDLES: int,
 ) -> int:
     """Handles with default"""
     key = "handles"
-    if key in merge_dicts:
-        ret = merge_dicts[key]
+    if key in read_job_py:
+        ret = read_job_py[key]
     else:
         ret = DEFAULT_HANDLES
 
@@ -677,13 +677,13 @@ def handles(
 @asset(
     group_name=group_name,
     ins={
-        "merge_dicts": AssetIn(),
+        "read_job_py": AssetIn(),
         "get_kitsu_task_dict": AssetIn(),
         "DEFAULT_FPS": AssetIn(),
     }
 )
 def fps(
-        merge_dicts: dict,
+        read_job_py: dict,
         get_kitsu_task_dict: dict,
         DEFAULT_FPS: float,
 ) -> float:
@@ -694,16 +694,16 @@ def fps(
     nb_frames = get_kitsu_task_dict["entity"]["nb_frames"]
     """
 
-    if bool(merge_dicts["kitsu_task"]):
+    if bool(read_job_py["kitsu_task"]):
         if "error" in get_kitsu_task_dict["kitsu_task_dict"]:
             raise Exception(f"Kitsu task ID is set but can't get FPS from Kitsu for this shot:\n"
                             f"{get_kitsu_task_dict['kitsu_task_dict']['error']}")
 
-    if "fps" in merge_dicts:
-        if bool(merge_dicts["fps"]):
-            fps = float(merge_dicts["fps"])
+    if "fps" in read_job_py:
+        if bool(read_job_py["fps"]):
+            fps = float(read_job_py["fps"])
 
-    elif bool(merge_dicts["kitsu_task"]):
+    elif bool(read_job_py["kitsu_task"]):
         fps = float(get_kitsu_task_dict['project']['fps'])
         if get_kitsu_task_dict["entity_type"]["name"] == 'Shot':
             if get_kitsu_task_dict['entity']['data'] is not None:
@@ -724,26 +724,26 @@ def fps(
 @asset(
     group_name=group_name,
     ins={
-        "merge_dicts": AssetIn(),
+        "read_job_py": AssetIn(),
     },
     description="Returns the output format of the render."
 )
 def output_format(
-        merge_dicts: dict,
+        read_job_py: dict,
 ) -> str:
 
-    if merge_dicts['output_format'] is None:
+    if read_job_py['output_format'] is None:
         raise ValueError("output_format is not defined.")
 
-    if merge_dicts['output_format'] not in merge_dicts['submitter']['output_formats_plugin']:
-        raise ValueError(f"output_format is not supported: {merge_dicts['output_format']}")
+    if read_job_py['output_format'] not in read_job_py['submitter']['output_formats_plugin']:
+        raise ValueError(f"output_format is not supported: {read_job_py['output_format']}")
 
-    yield Output(merge_dicts['output_format'])
+    yield Output(read_job_py['output_format'])
 
     yield AssetMaterialization(
         asset_key="output_format",
         metadata={
-            'output_format': MetadataValue.text(merge_dicts['output_format'])
+            'output_format': MetadataValue.text(read_job_py['output_format'])
         }
     )
 
@@ -751,14 +751,14 @@ def output_format(
 @asset(
     group_name=group_name,
     ins={
-        "merge_dicts": AssetIn(),
+        "read_job_py": AssetIn(),
         "handles": AssetIn(),
         "DEFAULT_FRAME_START": AssetIn(),
         "DONT_ALLOW_NEGATIVE_FRAMES": AssetIn(),
     }
 )
 def frame_start_absolute(
-        merge_dicts: dict,
+        read_job_py: dict,
         handles: int,
         DEFAULT_FRAME_START: int,
         DONT_ALLOW_NEGATIVE_FRAMES: bool,
@@ -772,9 +772,9 @@ def frame_start_absolute(
 
     fs = DEFAULT_FRAME_START
 
-    if "frame_start" in merge_dicts:
-        if bool(merge_dicts["frame_start"]):
-            fs = merge_dicts["frame_start"]
+    if "frame_start" in read_job_py:
+        if bool(read_job_py["frame_start"]):
+            fs = read_job_py["frame_start"]
 
     fsa = fs - handles
 
@@ -794,7 +794,7 @@ def frame_start_absolute(
 @asset(
     group_name=group_name,
     ins={
-        "merge_dicts": AssetIn(),
+        "read_job_py": AssetIn(),
         "get_kitsu_task_dict": AssetIn(),
         "handles": AssetIn(),
         "DEFAULT_FRAME_START": AssetIn(),
@@ -802,7 +802,7 @@ def frame_start_absolute(
     }
 )
 def frame_end_absolute(
-        merge_dicts: dict,
+        read_job_py: dict,
         get_kitsu_task_dict: dict,
         handles: int,
         DEFAULT_FRAME_START: int,
@@ -812,9 +812,9 @@ def frame_end_absolute(
     nb_frames = get_kitsu_task_dict["entity"]["nb_frames"]
     fe = DEFAULT_FRAME_START + (nb_frames - 1)
 
-    if "frame_end" in merge_dicts:
-        if bool(merge_dicts["frame_end"]):
-            fe = merge_dicts["frame_end"]
+    if "frame_end" in read_job_py:
+        if bool(read_job_py["frame_end"]):
+            fe = read_job_py["frame_end"]
 
     fea = fe + handles
 
@@ -1378,13 +1378,13 @@ def resolution_draft(
     group_name=group_name,
     ins={
         "get_kitsu_task_dict": AssetIn(),
-        "merge_dicts": AssetIn(),
+        "read_job_py": AssetIn(),
         "DEFAULT_RESOLUTION": AssetIn(),
     }
 )
 def resolution(
         get_kitsu_task_dict: dict,
-        merge_dicts: dict,
+        read_job_py: dict,
         DEFAULT_RESOLUTION: dict,
 ) -> tuple:
 
@@ -1393,10 +1393,10 @@ def resolution(
 
     resolution_manual = None
 
-    if 'resolution' in merge_dicts:
-        resolution_manual = merge_dicts['resolution']
+    if 'resolution' in read_job_py:
+        resolution_manual = read_job_py['resolution']
 
-    if bool(merge_dicts["kitsu_task"]):
+    if bool(read_job_py["kitsu_task"]):
         if get_kitsu_task_dict["entity_type"]["name"] == 'Shot':
             r = resolution_shot
         else:

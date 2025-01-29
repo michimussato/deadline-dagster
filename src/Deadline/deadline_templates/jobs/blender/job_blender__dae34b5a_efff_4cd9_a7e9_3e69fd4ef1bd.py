@@ -1,6 +1,7 @@
 from Deadline.deadline_templates.jobs.job_base import job
-from Deadline.deadline_templates.plugins.blender.plugin_blender_base import plugin
+from Deadline.deadline_templates.plugins.blender.plugin_blender__4_1_1 import plugin
 
+# - [x] This one
 
 job['job_file'] = '/nfs/projects/tests/blender/2023-11-13_EskofBubble/ColoredBubble_013.blend'
 job['plugin_dict'] = plugin
