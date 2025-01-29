@@ -46,7 +46,7 @@ tox -av  # to list all the tasks available
 ```
 
 ```
-gh repo create animallogic-sandbox/My-Skeleton-Package --push --disable-issues --disable-wiki --internal --source ./My-Skeleton-Package --remote=upstream
+gh repo create michimussato/My-Skeleton-Package --push --disable-issues --disable-wiki --internal --source ./My-Skeleton-Package --remote=upstream
 ```
 
 ## Sphinx

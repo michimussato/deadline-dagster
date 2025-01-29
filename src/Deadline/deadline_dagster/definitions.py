@@ -1,6 +1,12 @@
 import os
 
-from dagster import Definitions, load_assets_from_modules, AutoMaterializePolicy, AutoMaterializeRule
+from dagster import (
+    Definitions,
+    load_assets_from_modules,
+    AutoMaterializePolicy,
+    AutoMaterializeRule,
+    EnvVar,
+)
 
 from Deadline.deadline_dagster.assets import read_yaml, submit_jobs, constants_factory
 from Deadline.deadline_dagster.resources import (
@@ -34,7 +40,7 @@ resources = {
 }
 
 
-deployment_name =  # os.getenv("DAGSTER_DEPLOYMENT", "farm")
+deployment_name = EnvVar("DAGSTER_DEPLOYMENT").get_value()  # os.getenv("DAGSTER_DEPLOYMENT", "farm")
 
 
 defs = Definitions(

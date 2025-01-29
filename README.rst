@@ -43,6 +43,7 @@ Installation
 Clone and Install
 -----------------
 
+.. code-block:: shell
 
     git clone https://github.com/michimussato/deadline-dagster.git
     cd deadline-dagster
@@ -51,10 +52,23 @@ Clone and Install
     pip install -e .[dev]
 
 
+Run Dagster Dev
+---------------
+
+.. code-block:: shell
+
+   cd /home/michael/git/repos/deadline-dagster
+   export DAGSTER_HOME="$(pwd)/dagster/materializations"
+
+   source .venv/bin/activate
+   dagster dev --workspace "$(pwd)/dagster/workspace.yaml"
+
+
 
 Install into venv
 -----------------
 
+.. code-block:: shell
 
     source .venv/bin/activate
     python -m pip install "deadline-dagster[dev] @ git+https://github.com/michimussato/deadline-dagster.git@main"

@@ -1,19 +1,20 @@
 import datetime
 import uuid
 
-INITIAL_STATUSES = [
+INITIAL_STATUSES: list[str] = [
     'Active',
     'Suspended',
 ]
-OUTPUT_FORMATS = [
+OUTPUT_FORMATS: list[str] = [
     'png',
     'exr',
-    'jpg',
-    'tga',
+    "jpg",
+    "tga",
 ]
 
-job = {
-    'job_file': None,
+job: dict = {
+    "job_file": None,
+    "plugin_dict": {},
     'plugin_file': None,
     'job_uuid': f'{uuid.uuid4()}',
     'job_timestamp': f'{datetime.datetime.timestamp(datetime.datetime.now())}',
