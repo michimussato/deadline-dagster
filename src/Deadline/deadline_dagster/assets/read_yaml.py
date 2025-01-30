@@ -429,6 +429,10 @@ def render_output_filename(
     padding_deadline = f"{combine_dicts['yaml_submission']['plugin_dict']['submitter']['padding_deadline']}"
     padding_command = f"{combine_dicts['yaml_submission']['plugin_dict']['submitter']['padding_command']}"
 
+    # Don't uncomment
+    # Required to eval(padding_deadline) and eval(padding_command)
+    from Deadline.deadline_dagster.settings import PADDING as EVAL_PADDING
+
     ret = {
         'padding_deadline': f'{job_title}.{eval(padding_deadline)}.{output_format}',
         'padding_command': f'{job_title}.{eval(padding_command)}.{output_format}',
