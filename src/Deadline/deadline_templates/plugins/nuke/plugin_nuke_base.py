@@ -3,14 +3,14 @@ from Deadline.deadline_templates.jobs.job_base import job
 
 
 # plugin['submitter']['type'] = 'NukeSubmitter'
-plugin['submitter']['args'].append('--nukex')
-plugin['submitter']['args'].append('-t')  # terminal only (no gui); if <script> is a .py file it will be executed
-plugin['submitter']['args'].append('-f')  # render at full size (turns off proxy; use -p to force render at proxy)
-if bool(job['write_nodes']):
-    plugin['submitter']['args'].extend(['-X', f'{",".join(job["write_nodes"])}'])
-plugin['submitter']['args'].extend(['-F', '<STARTFRAME>-<ENDFRAME>'])
-plugin['submitter']['args'].append('-x')
-plugin['submitter']['args'].append('<QUOTE>{job_file}<QUOTE>')
+plugin["submitter"]["args"].append("--nukex")
+plugin["submitter"]["args"].append("-t")  # terminal only (no gui); if <script> is a .py file it will be executed
+plugin["submitter"]["args"].append("-f")  # render at full size (turns off proxy; use -p to force render at proxy)
+if bool(job["write_nodes"]):
+    plugin["submitter"]["args"].extend(["-X", f'{",".join(job["write_nodes"])}'])
+plugin["submitter"]["args"].extend(["-F", "<STARTFRAME>-<ENDFRAME>"])
+plugin["submitter"]["args"].append("-x")
+plugin["submitter"]["args"].append("<QUOTE>{job_file}<QUOTE>")
 
 # --------------------------------------------------------------
 # This next argument specifies the output of the write_farm node.
@@ -29,4 +29,4 @@ plugin['submitter']['args'].append('<QUOTE>{job_file}<QUOTE>')
 # not specified, the error would look somehow
 # like this:
 # Missing command-line argument #2 for write_farm.file
-plugin['submitter']['args'].append('<QUOTE>\\\"{render_output}\\\"<QUOTE>')
+plugin["submitter"]["args"].append('<QUOTE>\\\"{render_output}\\\"<QUOTE>')
