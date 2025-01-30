@@ -162,9 +162,9 @@ def get_task_url(
     # TODO: make fail safe
 
     # if bool(merge_dicts["kitsu_task"]):
-    if "error" in get_kitsu_task_dict["kitsu_task_dict"]:
+    if "error" in get_kitsu_task_dict:
         raise Exception(f"Kitsu task ID is set but can't get Task URL from Kitsu for this shot:\n"
-                        f"{get_kitsu_task_dict['kitsu_task_dict']['error']}")
+                        f"{get_kitsu_task_dict['error']}")
 
     task_dict = get_kitsu_task_dict
     task_url = kitsu_resource.get_task_url(task_dict=task_dict)
