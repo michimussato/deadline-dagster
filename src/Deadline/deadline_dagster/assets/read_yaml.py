@@ -695,9 +695,9 @@ def fps(
     """
 
     if bool(read_job_py["kitsu_task"]):
-        if "error" in get_kitsu_task_dict["kitsu_task_dict"]:
+        if "error" in get_kitsu_task_dict:
             raise Exception(f"Kitsu task ID is set but can't get FPS from Kitsu for this shot:\n"
-                            f"{get_kitsu_task_dict['kitsu_task_dict']['error']}")
+                            f"{get_kitsu_task_dict['error']}")
 
     if "fps" in read_job_py:
         if bool(read_job_py["fps"]):
