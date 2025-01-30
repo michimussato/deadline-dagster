@@ -735,7 +735,7 @@ def output_format(
     if read_job_py['output_format'] is None:
         raise ValueError("output_format is not defined.")
 
-    if read_job_py['output_format'] not in read_job_py['submitter']['output_formats_plugin']:
+    if read_job_py['output_format'] not in read_job_py["plugin_dict"]['submitter']['output_formats_plugin']:
         raise ValueError(f"output_format is not supported: {read_job_py['output_format']}")
 
     yield Output(read_job_py['output_format'])
