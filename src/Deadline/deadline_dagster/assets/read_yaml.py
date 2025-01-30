@@ -574,7 +574,7 @@ def job_title_str(
             _entity_info = f'{_entity_info} - {str(handles)}_{str(combine_dicts["yaml_submission"]["frame_start"]).zfill(PADDING)}-{str(combine_dicts["yaml_submission"]["frame_end"]).zfill(PADDING)}_{handles}'
             # _entity_info = f'{self.sequence_name}_{self.entity_name} - {str(self.handles)}_{str(self.frame_start).zfill(self.PADDING)}-{str(self.frame_end).zfill(self.PADDING)}_{self.handles}'
 
-    ret = f'{show_name} - {_entity_info} - {task_name} - {pathlib.Path(combine_dicts["yaml_submission"]["plugin_dict"]["job_file"]).name} - {version} - {pathlib.Path(combine_dicts["yaml_submission"]["submitter"]["executable"]).name}'
+    ret = f'{show_name} - {_entity_info} - {task_name} - {pathlib.Path(combine_dicts["yaml_submission"]["job_file"]).name} - {version} - {pathlib.Path(combine_dicts["yaml_submission"]["plugin_dict"]["submitter"]["executable"]).name}'
 
     yield Output(ret)
 
