@@ -45,7 +45,7 @@ assets = [
     },
     {
         "name": "PADDING",
-        "value": 4,
+        "value": settings.PADDING,
         "type": MetadataValue.int,
     },
     {

@@ -1,4 +1,3 @@
-import os
 import pathlib
 from dagster import (
     DefaultSensorStatus,
@@ -13,6 +12,7 @@ ExperimentalWarning: Class `AndAssetCondition` is experimental. It may break in 
 
 SENSORS_STATUS = DefaultSensorStatus.RUNNING
 JSON_INDENT = 2
+PADDING = 4
 SUBMISSION_JSON = "submission.json"
 OUTPUT_ROOT = pathlib.Path("/nfs/AWSPortalRoot1/out")
 INPUT_ROOT = pathlib.Path(EnvVar("DAGSTER_JOBS_IN").get_value())  # pathlib.Path(os.getenv("DAGSTER_JOBS_IN", "/nfs/in"))
