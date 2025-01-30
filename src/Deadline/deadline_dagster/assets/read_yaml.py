@@ -1007,7 +1007,7 @@ def plugin_info_file(
     render_output_directory.mkdir(parents=True, exist_ok=True)
     path = pathlib.Path(f'{render_output_directory}/plugin_info.txt')
     with open(path, 'w') as job_info_file:
-        job_info_file.write(f'Executable={combine_dicts["yaml_submission"]["submitter"]["executable"]}\n')
+        job_info_file.write(f'Executable={combine_dicts["yaml_submission"]["plugin_dict"]["submitter"]["executable"]}\n')
         job_info_file.write(f'Arguments="{render_arguments}"\n')
 
     yield Output(path)
@@ -1472,7 +1472,7 @@ def job_kitsu_publish(
                               f'<br>'
                               f'---<br>'
                               f'<br>'
-                              f'Execution Command: `{combine_dicts["yaml_submission"]["submitter"]["executable"]} {render_arguments}`<br>'
+                              f'Execution Command: `{combine_dicts["yaml_submission"]["plugin_dict"]["submitter"]["executable"]} {render_arguments}`<br>'
                               f'Submission Command: Todo<br>'
                               f'Job file: `{combine_dicts["yaml_submission"]["job_file"]}`<br>'
                               f'<QUOTE>'
