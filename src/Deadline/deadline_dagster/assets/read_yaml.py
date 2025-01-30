@@ -348,7 +348,7 @@ def render_version_directory(
         get_kitsu_task_dict: dict,
         show_name: str,
         task_name: str,
-        OUTPUT_ROOT: str,
+        OUTPUT_ROOT: pathlib.Path,
 ) -> str:
 
     # TODO: make this fail safe

@@ -25,7 +25,7 @@ assets = [
     {
         "name": "OUTPUT_ROOT",
         "value": settings.OUTPUT_ROOT,
-        "type": MetadataValue.text,
+        "type": MetadataValue.path,
     },
     {
         "name": "INPUT_ROOT",
