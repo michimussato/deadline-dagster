@@ -426,8 +426,8 @@ def render_output_filename(
     #     if combine_dicts['yaml_submission']['output_format'] is not None:
     #         output_format = combine_dicts['yaml_submission']['output_format']
 
-    padding_deadline = f"{combine_dicts['yaml_submission']['submitter']['padding_deadline']}"
-    padding_command = f"{combine_dicts['yaml_submission']['submitter']['padding_command']}"
+    padding_deadline = f"{combine_dicts['yaml_submission']['plugin_dict']['submitter']['padding_deadline']}"
+    padding_command = f"{combine_dicts['yaml_submission']['plugin_dict']['submitter']['padding_command']}"
 
     ret = {
         'padding_deadline': f'{job_title}.{eval(padding_deadline)}.{output_format}',
@@ -574,7 +574,7 @@ def job_title_str(
             _entity_info = f'{_entity_info} - {str(handles)}_{str(combine_dicts["yaml_submission"]["frame_start"]).zfill(PADDING)}-{str(combine_dicts["yaml_submission"]["frame_end"]).zfill(PADDING)}_{handles}'
             # _entity_info = f'{self.sequence_name}_{self.entity_name} - {str(self.handles)}_{str(self.frame_start).zfill(self.PADDING)}-{str(self.frame_end).zfill(self.PADDING)}_{self.handles}'
 
-    ret = f'{show_name} - {_entity_info} - {task_name} - {pathlib.Path(combine_dicts["yaml_submission"]["job_file"]).name} - {version} - {pathlib.Path(combine_dicts["yaml_submission"]["submitter"]["executable"]).name}'
+    ret = f'{show_name} - {_entity_info} - {task_name} - {pathlib.Path(combine_dicts["yaml_submission"]["plugin_dict"]["job_file"]).name} - {version} - {pathlib.Path(combine_dicts["yaml_submission"]["submitter"]["executable"]).name}'
 
     yield Output(ret)
 
@@ -848,7 +848,7 @@ def frame_end_absolute(
 )
 def frames(
         combine_dicts: dict,
-        FRAME_JUMPS: dict,
+        FRAME_JUMPS: list,
 ) -> str:
 
     frame_start_absolute = combine_dicts['yaml_submission']['frame_start']
@@ -965,10 +965,10 @@ def render_arguments(
         render_output_directory: pathlib.Path,
         render_output_filename: dict,
 ) -> str:
-    args = combine_dicts["yaml_submission"]['submitter']['args']
+    args = combine_dicts["yaml_submission"]["plugin_dict"]["submitter"]["args"]
 
-    combine_dicts['yaml_submission']['output_format'] = combine_dicts['yaml_submission']['output_format'].upper()
-    render_output = str(render_output_directory / render_output_filename['padding_command'])
+    combine_dicts["yaml_submission"]["output_format"] = combine_dicts["yaml_submission"]["output_format"].upper()
+    render_output = str(render_output_directory / render_output_filename["padding_command"])
 
     ret = " ".join(args).format(
         render_output=render_output,
