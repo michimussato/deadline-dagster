@@ -16,7 +16,8 @@ class KitsuResourceBase(ConfigurableResource):
 class KitsuResource(KitsuResourceBase):
     host: str = Field(
         description="Gazu API host name.",
-        default="http://miniboss/api",
+        # default="http://miniboss/api",
+        default="http://michimussato-fuji.nord/api",
     )
     user: str = Field(
         description="Gazu API username.",
