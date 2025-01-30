@@ -16,7 +16,7 @@ JSON_INDENT = 2
 SUBMISSION_JSON = "submission.json"
 OUTPUT_ROOT = pathlib.Path("/nfs/AWSPortalRoot1/out")
 INPUT_ROOT = pathlib.Path(EnvVar("DAGSTER_JOBS_IN").get_value())  # pathlib.Path(os.getenv("DAGSTER_JOBS_IN", "/nfs/in"))
-INPUT_ROOT_PROCESSED = pathlib.Path(EnvVar("DAGSTER_JOBS_IN").get_value())  # pathlib.Path(os.getenv("DAGSTER_JOBS_IN", "/nfs/in/")) / ".processing"
+INPUT_ROOT_PROCESSED = pathlib.Path(EnvVar("DAGSTER_JOBS_IN").get_value(), ".processing")  # pathlib.Path(os.getenv("DAGSTER_JOBS_IN", "/nfs/in/")) / ".processing"
 
 DEADLINE_ERRORS = [
     # Connecting to the correct repository?
