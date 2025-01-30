@@ -1385,7 +1385,7 @@ def resolution_draft(
 def resolution(
         get_kitsu_task_dict: dict,
         read_job_py: dict,
-        DEFAULT_RESOLUTION: dict,
+        DEFAULT_RESOLUTION: tuple[int, int],
 ) -> tuple:
 
     resolution_project = get_kitsu_task_dict['project']['resolution']
