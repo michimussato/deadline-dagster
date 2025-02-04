@@ -1,5 +1,5 @@
 """
-    Setup file for My-Skeleton-Package.
+    Setup file for dagster-job-processor.
     Use setup.cfg to configure your project.
 
     This file was generated with PyScaffold 4.6.

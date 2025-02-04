@@ -14,7 +14,7 @@ from dagster import (
 )
 import json
 
-from Deadline.deadline_dagster.resources import KitsuResource
+from Deadline.dagster_job_processor.resources import KitsuResource
 
 
 # TODO
@@ -441,7 +441,7 @@ def render_output_filename(
 
     # Don't uncomment
     # Required to eval(padding_deadline) and eval(padding_command)
-    from Deadline.deadline_dagster.settings import PADDING as EVAL_PADDING
+    from Deadline.dagster_job_processor.settings import PADDING as EVAL_PADDING
 
     ret = {
         'padding_deadline': f'{job_title}.{eval(padding_deadline)}.{output_format}',

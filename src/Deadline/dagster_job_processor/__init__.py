@@ -2,11 +2,11 @@
 #
 # from dagster import Definitions, load_assets_from_modules, AutoMaterializePolicy, AutoMaterializeRule
 #
-# from deadline_dagster.assets import read_yaml, submit_jobs, constants_factory
-# from deadline_dagster.resources import (
+# from dagster_job_processor.assets import read_yaml, submit_jobs, constants_factory
+# from dagster_job_processor.resources import (
 #     KitsuResource,
 # )
-# from deadline_dagster.sensors import submission_sensor, ingestion_sensor, my_custom_auto_materialize_sensor
+# from dagster_job_processor.sensors import submission_sensor, ingestion_sensor, my_custom_auto_materialize_sensor
 #
 #
 # read_yaml_assets = load_assets_from_modules(

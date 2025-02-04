@@ -9,7 +9,7 @@ from dagster import (
     AssetsDefinition,
 )
 
-from Deadline.deadline_dagster import settings
+from Deadline.dagster_job_processor import settings
 
 
 GROUP_NAME = "CONSTANTS_ASSET_FACTORY"

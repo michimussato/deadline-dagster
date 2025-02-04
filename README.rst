@@ -30,7 +30,7 @@
 |
 
 ================
-deadline-dagster
+dagster-job-processor
 ================
 
 
@@ -45,8 +45,8 @@ Clone and Install
 
 .. code-block:: shell
 
-    git clone https://github.com/michimussato/deadline-dagster.git
-    cd deadline-dagster
+    git clone https://github.com/michimussato/dagster-job-processor.git
+    cd dagster-job-processor
     python3.11 -m venv .venv
     source .venv/bin/activate
     pip install -e .[dev]
@@ -57,7 +57,7 @@ Run Dagster Dev
 
 .. code-block:: shell
 
-   cd /home/michael/git/repos/deadline-dagster
+   cd dagster-job-processor
    export DAGSTER_HOME="$(pwd)/dagster/materializations"
 
    source .venv/bin/activate
@@ -71,7 +71,7 @@ Install into venv
 .. code-block:: shell
 
     source .venv/bin/activate
-    python -m pip install "deadline-dagster[dev] @ git+https://github.com/michimussato/deadline-dagster.git@main"
+    python -m pip install "dagster-job-processor[dev] @ git+https://github.com/michimussato/dagster-job-processor.git@main"
 
 .. _pyscaffold-notes:
 

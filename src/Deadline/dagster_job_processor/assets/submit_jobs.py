@@ -3,7 +3,7 @@ import subprocess
 
 from dagster import asset, Config, MaterializeResult, MetadataValue
 
-from Deadline.deadline_dagster import settings
+from Deadline.dagster_job_processor import settings
 
 
 class SubmitJobConfig(Config):

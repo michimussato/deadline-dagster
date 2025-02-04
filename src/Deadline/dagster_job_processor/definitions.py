@@ -6,11 +6,11 @@ from dagster import (
     EnvVar,
 )
 
-from Deadline.deadline_dagster.assets import read_yaml, submit_jobs, constants_factory
-from Deadline.deadline_dagster.resources import (
+from Deadline.dagster_job_processor.assets import read_yaml, submit_jobs, constants_factory
+from Deadline.dagster_job_processor.resources import (
     KitsuResource,
 )
-from Deadline.deadline_dagster.sensors import submission_sensor, ingestion_sensor, my_custom_auto_materialize_sensor
+from Deadline.dagster_job_processor.sensors import submission_sensor, ingestion_sensor, my_custom_auto_materialize_sensor
 
 
 read_yaml_assets = load_assets_from_modules(
