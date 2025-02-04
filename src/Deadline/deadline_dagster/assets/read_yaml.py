@@ -4,11 +4,13 @@ import importlib.util
 import os
 import shutil
 import sys
+from pathlib import Path
+from typing import Any, Generator
 
 from dagster import (
     asset, AssetIn, MetadataValue,
     AssetMaterialization, Output,
-    Config,
+    Config, AssetExecutionContext,
 )
 import json
 
@@ -34,8 +36,9 @@ class IngestJobConfig(Config):
     description="Parses the job file.",
 )
 def read_job_py(
+        context: AssetExecutionContext,
         config: IngestJobConfig,
-) -> dict:
+) -> Generator[Output[Any] | AssetMaterialization | Any, Any, None]:
 
     parent = config.filename
 
@@ -52,7 +55,7 @@ def read_job_py(
     yield AssetMaterialization(
         asset_key="read_job_py",
         metadata={
-            'json': MetadataValue.json(job)
+            "__".join(context.asset_key.path): MetadataValue.json(job),
         }
     )
 
@@ -129,9 +132,10 @@ def read_job_py(
     },
 )
 def get_kitsu_task_dict(
+        context: AssetExecutionContext,
         kitsu_resource: KitsuResource,
         read_job_py: dict,
-) -> dict:
+) -> Generator[Output[Any] | AssetMaterialization | Any, Any, None]:
     """Returns a Kitsu task dict as a MaterializeResult object in the JSON format."""
 
     # TODO: make fail safe
@@ -144,7 +148,7 @@ def get_kitsu_task_dict(
     yield AssetMaterialization(
         asset_key="get_kitsu_task_dict",
         metadata={
-            'json': MetadataValue.json(task_dict)
+            "__".join(context.asset_key.path): MetadataValue.json(task_dict),
         }
     )
 
@@ -154,9 +158,10 @@ def get_kitsu_task_dict(
     ins={"get_kitsu_task_dict": AssetIn()},
 )
 def get_task_url(
+        context: AssetExecutionContext,
         kitsu_resource: KitsuResource,
         get_kitsu_task_dict: dict,
-) -> str:
+) -> Generator[Output[str] | AssetMaterialization | Any, Any, None]:
     """Returns a Kitsu task dict as a MaterializeResult object in the JSON format."""
 
     # TODO: make fail safe
@@ -174,7 +179,7 @@ def get_task_url(
     yield AssetMaterialization(
         asset_key="get_task_url",
         metadata={
-            'get_task_url': MetadataValue.url(task_url)
+            "__".join(context.asset_key.path): MetadataValue.url(task_url),
         }
     )
 
@@ -189,11 +194,12 @@ def get_task_url(
     },
 )
 def annotations_string(
+        context: AssetExecutionContext,
         combine_dicts: dict,
         version: str,
         PADDING: int,
         RESOLUTION_DRAFT_SCALE: float,
-) -> str:
+) -> Generator[Output[str] | AssetMaterialization | Any, Any, None]:
     """Returns the annotations string for the Deadline Draft jobs as a MaterializeResult object in the JSON format."""
 
     frame_start_absolute = combine_dicts['yaml_submission']['frame_start']
@@ -263,7 +269,7 @@ def annotations_string(
     yield AssetMaterialization(
         asset_key="annotations_string",
         metadata={
-            'json': MetadataValue.json(draft_annotations_string),
+            "__".join(context.asset_key.path): MetadataValue.json(draft_annotations_string),
             'annotations_string': MetadataValue.text(json.dumps(draft_annotations_string))
         }
     )
@@ -289,6 +295,7 @@ def annotations_string(
     },
 )
 def combine_dicts(
+        context: AssetExecutionContext,
         read_job_py: dict,
         get_kitsu_task_dict: dict,
         get_task_url: str,
@@ -303,7 +310,7 @@ def combine_dicts(
         fps: float,
         output_format: str,
         JOB_DICT_TEMPLATE: dict,
-) -> dict:
+) -> Generator[Output[dict] | AssetMaterialization | Any, Any, None]:
 
     read_job_py.update({"handles": handles})
     read_job_py.update({"frame_start": frame_start_absolute})
@@ -328,7 +335,7 @@ def combine_dicts(
     yield AssetMaterialization(
         asset_key="combine_dicts",
         metadata={
-            'json': MetadataValue.json(get_kitsu_task_dict)
+            "__".join(context.asset_key.path): MetadataValue.json(get_kitsu_task_dict),
         }
     )
 
@@ -344,12 +351,13 @@ def combine_dicts(
     },
 )
 def render_version_directory(
+        context: AssetExecutionContext,
         read_job_py: dict,
         get_kitsu_task_dict: dict,
         show_name: str,
         task_name: str,
         OUTPUT_ROOT: pathlib.Path,
-) -> str:
+) -> Generator[Output[str] | AssetMaterialization | Any, Any, None]:
 
     # TODO: make this fail safe
     if bool({read_job_py["kitsu_task"]}):
@@ -367,7 +375,7 @@ def render_version_directory(
     yield AssetMaterialization(
         asset_key="render_version_directory",
         metadata={
-            'path': MetadataValue.path(_out)
+            "__".join(context.asset_key.path): MetadataValue.path(_out),
         }
     )
 
@@ -379,8 +387,9 @@ def render_version_directory(
     },
 )
 def version(
+        context: AssetExecutionContext,
         combine_dicts: dict,
-) -> str:
+) -> Generator[Output[str] | AssetMaterialization | Any, Any, None]:
     # This directory must exist in order for it to be iterable
 
     padding = 3
@@ -402,8 +411,8 @@ def version(
     yield AssetMaterialization(
         asset_key="version",
         metadata={
-            'version': MetadataValue.text(new_version),
-            'dirs': MetadataValue.json(dirs)
+            "__".join(context.asset_key.path): MetadataValue.text(new_version),
+            'dirs': MetadataValue.json(dirs),
         }
     )
 
@@ -415,8 +424,9 @@ def version(
     },
 )
 def render_output_filename(
+        context: AssetExecutionContext,
         combine_dicts: dict,
-) -> str:
+) -> Generator[Output[dict[str, str]] | AssetMaterialization | Any, Any, None]:
 
     job_title = combine_dicts['yaml_submission']['job_title']
 
@@ -443,7 +453,7 @@ def render_output_filename(
     yield AssetMaterialization(
         asset_key="render_output_filename",
         metadata={
-            'render_output_filename': MetadataValue.json(ret)
+            "__".join(context.asset_key.path): MetadataValue.json(ret),
         }
     )
 
@@ -457,10 +467,11 @@ def render_output_filename(
     }
 )
 def render_output_directory(
+        context: AssetExecutionContext,
         combine_dicts: dict,
         version: str,
         PADDING: int,
-) -> pathlib.Path:
+) -> Generator[Output[Path] | AssetMaterialization | Any, Any, None]:
 
     handles = combine_dicts['yaml_submission']['handles']
     render_version_directory = pathlib.Path(combine_dicts['yaml_submission']['render_version_directory'])
@@ -476,7 +487,7 @@ def render_output_directory(
     yield AssetMaterialization(
         asset_key="render_output_directory",
         metadata={
-            'render_output_directory': MetadataValue.path(_out)
+            "__".join(context.asset_key.path): MetadataValue.path(_out)
         }
     )
 
@@ -488,8 +499,9 @@ def render_output_directory(
     }
 )
 def job_title(
+        context: AssetExecutionContext,
         read_job_py: dict,
-) -> str:
+) -> Generator[Output[str] | AssetMaterialization | Any, Any, None]:
     base, first_dot, rest = pathlib.Path(read_job_py["job_file"]).name.partition('.')
 
     yield Output(base)
@@ -497,7 +509,7 @@ def job_title(
     yield AssetMaterialization(
         asset_key="job_title",
         metadata={
-            'job_title': MetadataValue.text(base)
+            "__".join(context.asset_key.path): MetadataValue.text(base)
         }
     )
 
@@ -510,9 +522,10 @@ def job_title(
     }
 )
 def show_name(
+        context: AssetExecutionContext,
         read_job_py: dict,
         get_kitsu_task_dict: dict,
-) -> str:
+) -> Generator[Output[str | Any] | AssetMaterialization | Any, Any, None]:
     if bool(read_job_py["kitsu_task"]):
         ret = get_kitsu_task_dict['project']['name']
     else:
@@ -523,7 +536,7 @@ def show_name(
     yield AssetMaterialization(
         asset_key="show_name",
         metadata={
-            'show_name': MetadataValue.text(ret)
+            "__".join(context.asset_key.path): MetadataValue.text(ret)
         }
     )
 
@@ -536,9 +549,10 @@ def show_name(
     }
 )
 def task_name(
+        context: AssetExecutionContext,
         read_job_py: dict,
         get_kitsu_task_dict: dict,
-) -> str:
+) -> Generator[Output[str | Any] | AssetMaterialization | Any, Any, None]:
     if bool(read_job_py["kitsu_task"]):
         ret = get_kitsu_task_dict['task_type']['name']
     else:
@@ -549,7 +563,7 @@ def task_name(
     yield AssetMaterialization(
         asset_key="task_name",
         metadata={
-            'task_name': MetadataValue.text(ret)
+            "__".join(context.asset_key.path): MetadataValue.text(ret)
         }
     )
 
@@ -563,10 +577,11 @@ def task_name(
     }
 )
 def job_title_str(
+        context: AssetExecutionContext,
         combine_dicts: dict,
         version: str,
         PADDING: int,
-) -> str:
+) -> Generator[Output[str] | AssetMaterialization | Any, Any, None]:
     _entity_info = combine_dicts["entity"]["name"]
 
     handles = combine_dicts['yaml_submission']['handles']
@@ -585,7 +600,7 @@ def job_title_str(
     yield AssetMaterialization(
         asset_key="job_title_str",
         metadata={
-            'job_title_str': MetadataValue.text(ret)
+            "__".join(context.asset_key.path): MetadataValue.text(ret)
         }
     )
 
@@ -597,8 +612,9 @@ def job_title_str(
     }
 )
 def batch_name(
+        context: AssetExecutionContext,
         job_title_str: str
-) -> str:
+) -> Generator[Output[str] | AssetMaterialization | Any, Any, None]:
 
     ret = f'Batch: {job_title_str}'
 
@@ -607,7 +623,7 @@ def batch_name(
     yield AssetMaterialization(
         asset_key="batch_name",
         metadata={
-            'batch_name': MetadataValue.text(ret)
+            "__".join(context.asset_key.path): MetadataValue.text(ret)
         }
     )
 
@@ -622,11 +638,12 @@ def batch_name(
     }
 )
 def props(
+        context: AssetExecutionContext,
         combine_dicts: dict,
         render_output_directory: pathlib.Path,
         render_output_filename: dict,
         batch_name: str,
-) -> list:
+) -> Generator[Output[list[str]] | AssetMaterialization | Any, Any, None]:
 
     props = [
         ('Comment', f'{combine_dicts["yaml_submission"]["comment"]}'),  # TODO
@@ -645,7 +662,7 @@ def props(
     yield AssetMaterialization(
         asset_key="props",
         metadata={
-            'props': MetadataValue.json(props_)
+            "__".join(context.asset_key.path): MetadataValue.json(props_)
         }
     )
 
@@ -658,9 +675,10 @@ def props(
     }
 )
 def handles(
+        context: AssetExecutionContext,
         read_job_py: dict,
         DEFAULT_HANDLES: int,
-) -> int:
+) -> Generator[Output[int | Any] | AssetMaterialization | Any, Any, None]:
     """Handles with default"""
     key = "handles"
     if key in read_job_py:
@@ -673,7 +691,7 @@ def handles(
     yield AssetMaterialization(
         asset_key=key,
         metadata={
-            key: MetadataValue.int(ret)
+            "__".join(context.asset_key.path): MetadataValue.int(ret)
         }
     )
 
@@ -687,10 +705,11 @@ def handles(
     }
 )
 def fps(
+        context: AssetExecutionContext,
         read_job_py: dict,
         get_kitsu_task_dict: dict,
         DEFAULT_FPS: float,
-) -> float:
+) -> Generator[Output[float] | AssetMaterialization | Any, Any, None]:
 
     """
     frame_in = get_kitsu_task_dict["entity"]["data"]["frame_in"]
@@ -720,7 +739,7 @@ def fps(
     yield AssetMaterialization(
         asset_key="fps",
         metadata={
-            'fps': MetadataValue.float(fps)
+            "__".join(context.asset_key.path): MetadataValue.float(fps)
         }
     )
 
@@ -733,8 +752,9 @@ def fps(
     description="Returns the output format of the render."
 )
 def output_format(
+        context: AssetExecutionContext,
         read_job_py: dict,
-) -> str:
+) -> Generator[Output[Any] | AssetMaterialization | Any, Any, None]:
 
     if read_job_py['output_format'] is None:
         raise ValueError("output_format is not defined.")
@@ -747,7 +767,7 @@ def output_format(
     yield AssetMaterialization(
         asset_key="output_format",
         metadata={
-            'output_format': MetadataValue.text(read_job_py['output_format'])
+            "__".join(context.asset_key.path): MetadataValue.text(read_job_py['output_format'])
         }
     )
 
@@ -762,11 +782,12 @@ def output_format(
     }
 )
 def frame_start_absolute(
+        context: AssetExecutionContext,
         read_job_py: dict,
         handles: int,
         DEFAULT_FRAME_START: int,
         DONT_ALLOW_NEGATIVE_FRAMES: bool,
-) -> int:
+) -> Generator[Output[int | Any] | AssetMaterialization | Any, Any, None]:
 
     """
     frame_in = get_kitsu_task_dict["entity"]["data"]["frame_in"]
@@ -790,7 +811,7 @@ def frame_start_absolute(
     yield AssetMaterialization(
         asset_key="frame_start_absolute",
         metadata={
-            'frame_start_absolute': MetadataValue.int(fsa)
+            "__".join(context.asset_key.path): MetadataValue.int(fsa)
         }
     )
 
@@ -806,12 +827,13 @@ def frame_start_absolute(
     }
 )
 def frame_end_absolute(
+        context: AssetExecutionContext,
         read_job_py: dict,
         get_kitsu_task_dict: dict,
         handles: int,
         DEFAULT_FRAME_START: int,
         DONT_ALLOW_NEGATIVE_FRAMES: bool,
-) -> int:
+) -> Generator[Output[int | Any] | AssetMaterialization | Any, Any, None]:
 
     nb_frames = get_kitsu_task_dict["entity"]["nb_frames"]
     fe = DEFAULT_FRAME_START + (nb_frames - 1)
@@ -838,7 +860,7 @@ def frame_end_absolute(
     yield AssetMaterialization(
         asset_key="frame_end_absolute",
         metadata={
-            'frame_end_absolute': MetadataValue.int(fea)
+            "__".join(context.asset_key.path): MetadataValue.int(fea)
         }
     )
 
@@ -851,9 +873,10 @@ def frame_end_absolute(
     }
 )
 def frames(
+        context: AssetExecutionContext,
         combine_dicts: dict,
         FRAME_JUMPS: list,
-) -> str:
+) -> Generator[Output[str] | AssetMaterialization | Any, Any, None]:
 
     frame_start_absolute = combine_dicts['yaml_submission']['frame_start']
     frame_end_absolute = combine_dicts['yaml_submission']['frame_end']
@@ -878,7 +901,7 @@ def frames(
     yield AssetMaterialization(
         asset_key="frames",
         metadata={
-            'frames': MetadataValue.text(frame_list)
+            "__".join(context.asset_key.path): MetadataValue.text(frame_list)
         }
     )
 
@@ -895,13 +918,14 @@ def frames(
     }
 )
 def job_info_file(
+        context: AssetExecutionContext,
         combine_dicts: dict,
         batch_name: str,
         job_title_str: str,
         render_output_directory: pathlib.Path,
         frames: str,
         props: list,
-) -> pathlib.Path:
+) -> Generator[Output[Path] | AssetMaterialization | Any, Any, None]:
 
     # https://docs.thinkboxsoftware.com/products/deadline/10.2/1_User%20Manual/manual/manual-submission.html#job-info-file-options
     render_output_directory.mkdir(parents=True, exist_ok=True)
@@ -922,7 +946,7 @@ def job_info_file(
     yield AssetMaterialization(
         asset_key="job_info_file",
         metadata={
-            'job_info_file': MetadataValue.path(path)
+            "__".join(context.asset_key.path): MetadataValue.path(path)
         }
     )
 
@@ -936,9 +960,10 @@ def job_info_file(
     }
 )
 def paste_job_py(
+        context: AssetExecutionContext,
         render_output_directory: pathlib.Path,
         combine_dicts: dict,
-) -> pathlib.Path:
+) -> Generator[Output[Path] | AssetMaterialization | Any, Any, None]:
 
     job_py = pathlib.Path(combine_dicts["yaml_submission"]['job_file_py'])
 
@@ -951,7 +976,7 @@ def paste_job_py(
     yield AssetMaterialization(
         asset_key="paste_job_py",
         metadata={
-            'paste_job_py': MetadataValue.path(ret)
+            "__".join(context.asset_key.path): MetadataValue.path(ret)
         }
     )
 
@@ -965,10 +990,11 @@ def paste_job_py(
     }
 )
 def render_arguments(
+        context: AssetExecutionContext,
         combine_dicts: dict,
         render_output_directory: pathlib.Path,
         render_output_filename: dict,
-) -> str:
+) -> Generator[Output[str] | AssetMaterialization | Any, Any, None]:
     args = combine_dicts["yaml_submission"]["plugin_dict"]["submitter"]["args"]
 
     combine_dicts["yaml_submission"]["output_format"] = combine_dicts["yaml_submission"]["output_format"].upper()
@@ -984,7 +1010,7 @@ def render_arguments(
     yield AssetMaterialization(
         asset_key="render_arguments",
         metadata={
-            'render_arguments': MetadataValue.text(ret)
+            "__".join(context.asset_key.path): MetadataValue.text(ret)
         }
     )
 
@@ -998,10 +1024,11 @@ def render_arguments(
     }
 )
 def plugin_info_file(
+        context: AssetExecutionContext,
         render_output_directory: pathlib.Path,
         combine_dicts: dict,
         render_arguments: str,
-) -> pathlib.Path:
+) -> Generator[Output[pathlib.Path] | AssetMaterialization | Any, Any, None]:
 
     # https://docs.thinkboxsoftware.com/products/deadline/10.2/1_User%20Manual/manual/manual-submission.html#plug-in-info-file
     render_output_directory.mkdir(parents=True, exist_ok=True)
@@ -1015,7 +1042,7 @@ def plugin_info_file(
     yield AssetMaterialization(
         asset_key="plugin_info_file",
         metadata={
-            'plugin_info_file': MetadataValue.path(path)
+            "__".join(context.asset_key.path): MetadataValue.path(path)
         }
     )
 
@@ -1036,6 +1063,7 @@ def plugin_info_file(
     }
 )
 def job_submission_tree(
+        context: AssetExecutionContext,
         combine_dicts: dict,
         render_output_directory: pathlib.Path,
         job_info_file: pathlib.Path,
@@ -1046,7 +1074,7 @@ def job_submission_tree(
         JSON_INDENT: int,
         SUBMISSION_JSON: str,
         JOB_DICT_TEMPLATE: dict,
-) -> dict:
+) -> Generator[Output[dict[str, list[str]]] | AssetMaterialization | Any, Any, None]:
 
     ####
     # {
@@ -1156,7 +1184,7 @@ def job_submission_tree(
     yield AssetMaterialization(
         asset_key="job_submission_tree",
         metadata={
-            'job_submission_tree': MetadataValue.json(ret)
+            "__".join(context.asset_key.path): MetadataValue.json(ret)
         }
     )
 
@@ -1176,6 +1204,7 @@ def job_submission_tree(
     }
 )
 def job_draft_png(
+        context: AssetExecutionContext,
         combine_dicts: dict,
         render_output_directory: pathlib.Path,
         render_output_filename: dict,
@@ -1185,7 +1214,7 @@ def job_draft_png(
         annotations_string: str,
         PADDING: int,
         RESOLUTION_DRAFT_SCALE: float,
-) -> dict:
+) -> Generator[Output[dict[str, str]] | AssetMaterialization | Any, Any, None]:
     """
     The QuickDraft PNG Job
 
@@ -1249,7 +1278,7 @@ def job_draft_png(
     yield AssetMaterialization(
         asset_key="job_draft_png",
         metadata={
-            'job_draft_png': MetadataValue.json(ret)
+            "__".join(context.asset_key.path): MetadataValue.json(ret)
         }
     )
 
@@ -1269,6 +1298,7 @@ def job_draft_png(
     }
 )
 def job_draft_mov(
+        context: AssetExecutionContext,
         combine_dicts: dict,
         render_output_directory: pathlib.Path,
         render_output_filename: dict,
@@ -1278,7 +1308,7 @@ def job_draft_mov(
         annotations_string: str,
         PADDING: int,
         RESOLUTION_DRAFT_SCALE: float,
-) -> dict:
+) -> Generator[Output[dict[str, str]] | AssetMaterialization | Any, Any, None]:
     """
     The QuickDraft MOV Job
 
@@ -1347,7 +1377,7 @@ def job_draft_mov(
     yield AssetMaterialization(
         asset_key="job_draft_mov",
         metadata={
-            'job_draft_mov': MetadataValue.json(ret)
+            "__".join(context.asset_key.path): MetadataValue.json(ret)
         }
     )
 
@@ -1360,9 +1390,10 @@ def job_draft_mov(
     }
 )
 def resolution_draft(
+        context: AssetExecutionContext,
         combine_dicts: dict,
         RESOLUTION_DRAFT_SCALE: float,
-) -> tuple:
+) -> Generator[Output[tuple[float | Any, ...]] | AssetMaterialization | Any, Any, None]:
 
     resolution = combine_dicts['yaml_submission']["resolution"]
 
@@ -1373,7 +1404,7 @@ def resolution_draft(
     yield AssetMaterialization(
         asset_key="resolution_draft",
         metadata={
-            'resolution_draft': MetadataValue.json(ret)
+            "__".join(context.asset_key.path): MetadataValue.json(ret)
         }
     )
 
@@ -1387,10 +1418,11 @@ def resolution_draft(
     }
 )
 def resolution(
+        context: AssetExecutionContext,
         get_kitsu_task_dict: dict,
         read_job_py: dict,
         DEFAULT_RESOLUTION: tuple[int, int],
-) -> tuple:
+) -> Generator[Output[tuple[int, ...] | None | tuple[int, int] | Any] | AssetMaterialization | Any, Any, None]:
 
     resolution_project = get_kitsu_task_dict['project']['resolution']
     resolution_shot = get_kitsu_task_dict["entity"]["data"]["resolution"]
@@ -1414,7 +1446,7 @@ def resolution(
     yield AssetMaterialization(
         asset_key="resolution",
         metadata={
-            'resolution': MetadataValue.json(w_h)
+            "__".join(context.asset_key.path): MetadataValue.json(w_h)
         }
     )
 
@@ -1433,6 +1465,7 @@ def resolution(
     }
 )
 def job_kitsu_publish(
+        context: AssetExecutionContext,
         combine_dicts: dict,
         render_arguments: str,
         render_output_directory: pathlib.Path,
@@ -1441,7 +1474,7 @@ def job_kitsu_publish(
         batch_name: str,
         job_title_str: str,
         GAZU_PY: str,
-) -> dict:
+) -> Generator[Output[dict[str, str]] | AssetMaterialization | Any, Any, None]:
     """
     The Kitsu-Publish Job
 
@@ -1511,7 +1544,7 @@ def job_kitsu_publish(
     yield AssetMaterialization(
         asset_key="job_kitsu_publish",
         metadata={
-            'job_kitsu_publish': MetadataValue.json(ret)
+            "__".join(context.asset_key.path): MetadataValue.json(ret)
         }
     )
 
@@ -1527,11 +1560,12 @@ def job_kitsu_publish(
     },
 )
 def export_combined_dict(
+        context: AssetExecutionContext,
         render_output_directory: pathlib.Path,
         combine_dicts: dict,
         job_submission_tree: dict,
         JSON_INDENT: int,
-) -> pathlib.Path:
+) -> Generator[Output[Path] | AssetMaterialization | Any, Any, None]:
 
     combine_dicts['deadline_cmd'] = job_submission_tree
 
@@ -1545,7 +1579,7 @@ def export_combined_dict(
     yield AssetMaterialization(
         asset_key="export_combined_dict",
         metadata={
-            'json': MetadataValue.path(out),
+            "__".join(context.asset_key.path): MetadataValue.path(out),
             'destination': MetadataValue.path(out.parent),
         }
     )
